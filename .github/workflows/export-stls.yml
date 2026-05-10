@@ -24,6 +24,9 @@ jobs:
       - name: Export Right Pillar
         run: openscad-nightly --enable=manifold -o mom_pillar_right.stl mom_pillar_right.scad
 
+      - name: Export 3D Preview Image
+        run: openscad-nightly --enable=manifold --imgsize=1280,720 --camera=150,100,100,55,0,25,1200 -o preview.png mom_assembly.scad
+
       - name: Upload STLs as Artifacts
         uses: actions/upload-artifact@v3
         with:
@@ -31,3 +34,4 @@ jobs:
           path: |
             mom_pillar_left.stl
             mom_pillar_right.stl
+            preview.png
