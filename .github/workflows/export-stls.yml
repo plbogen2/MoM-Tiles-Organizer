@@ -12,17 +12,17 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Install OpenSCAD
+      - name: Install OpenSCAD (Nightly)
         run: |
-          sudo add-apt-repository ppa:openscad/releases -y
+          sudo add-apt-repository ppa:openscad/nightly -y
           sudo apt-get update
-          sudo apt-get install openscad -y
+          sudo apt-get install openscad-nightly -y
 
       - name: Export Left Pillar
-        run: openscad -o mom_pillar_left.stl mom_pillar_left.scad
+        run: openscad-nightly --enable=manifold -o mom_pillar_left.stl mom_pillar_left.scad
 
       - name: Export Right Pillar
-        run: openscad -o mom_pillar_right.stl mom_pillar_right.scad
+        run: openscad-nightly --enable=manifold -o mom_pillar_right.stl mom_pillar_right.scad
 
       - name: Upload STLs as Artifacts
         uses: actions/upload-artifact@v3
