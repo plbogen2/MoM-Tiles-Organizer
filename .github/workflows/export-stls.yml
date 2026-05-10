@@ -1,0 +1,33 @@
+name: Export STLs
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch: # Allows manual triggering
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install OpenSCAD
+        run: |
+          sudo add-apt-repository ppa:openscad/releases -y
+          sudo apt-get update
+          sudo apt-get install openscad -y
+
+      - name: Export Left Pillar
+        run: openscad -o mom_pillar_left.stl mom_pillar_left.scad
+
+      - name: Export Right Pillar
+        run: openscad -o mom_pillar_right.stl mom_pillar_right.scad
+
+      - name: Upload STLs as Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: Cursed-Bone-Cabinet-STLs
+          path: |
+            mom_pillar_left.stl
+            mom_pillar_right.stl
