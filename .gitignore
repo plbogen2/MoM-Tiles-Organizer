@@ -1,0 +1,22 @@
+# OpenSCAD 
+*.stl
+*.obj
+*.off
+*.3mf
+*.dxf
+*.svg
+!/svgs/*.svg
+
+# Auto-generated previews
+*.png
+*.jpg
+*.jpeg
+
+# Temp/Backup files
+*~
+*.bak
+*.tmp
+.DS_Store
+
+# OpenSCAD Backup files
+.openscad/
