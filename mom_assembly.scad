@@ -40,7 +40,7 @@ for (tower_num = [0:1]) {
     }
 
     // --- REAL TRAY PREVIEW ---
-    if ($preview && SHOW_TRAYS) {
+    if (SHOW_TRAYS) {
       for (row = [0:NUM_TRAYS - 1]) {
         idx = row + (tower_num * 23);
         data = tray_manifest[idx];

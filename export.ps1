@@ -31,13 +31,7 @@ if (!$osPath) {
     return
 }
 
-# 2. DEFINE TARGETS
-# Mapping of Source SCAD -> Output STL
-$targets = @{
-    "mom_pillar_left.scad"  = "mom_pillar_left.stl"
-    "mom_pillar_right.scad" = "mom_pillar_right.stl"
-}
-
+# 2. SETUP DIRECTORIES
 $stlDir = "./STLs"
 $pngDir = "./PNGs"
 
@@ -47,21 +41,29 @@ if ($RenderPng -and !(Test-Path $pngDir)) { New-Item -ItemType Directory -Path $
 Write-Host "--- Starting Render Loop ---" -ForegroundColor Cyan
 Write-Host "Using OpenSCAD at: $osPath"
 
-foreach ($scadFile in $targets.Keys) {
-    $stlFile = "$stlDir/$($targets[$scadFile])"
-    
-    Write-Host "Rendering STL: $scadFile -> $stlFile" -ForegroundColor Yellow
-    
-    # Check if file exists
-    if (!(Test-Path $scadFile)) {
-        Write-Host "  [SKIP] $scadFile not found" -ForegroundColor DarkGray
-        continue
-    }
+# 3. PILLAR RENDER
+$pillars = @{
+    "mom_pillar_left.scad"  = "mom_pillar_left.stl"
+    "mom_pillar_right.scad" = "mom_pillar_right.stl"
+}
 
+foreach ($scadFile in $pillars.Keys) {
+    $stlFile = "$stlDir/$($pillars[$scadFile])"
+    Write-Host "Rendering Pillar: $scadFile -> $stlFile" -ForegroundColor Yellow
+    if (!(Test-Path $scadFile)) { continue }
     if (Test-Path $stlFile) { Remove-Item $stlFile }
+    & $osPath -o $stlFile --enable manifold $scadFile
+    if ((Test-Path $stlFile) -and (Get-Item $stlFile).Length -gt 0) { Write-Host "  [STL] Success" -ForegroundColor Green }
+}
+
+# 4. TRAY RENDER LOOP
+$trayCount = 46
+for ($i = 0; $i -lt $trayCount; $i++) {
+    $stlFile = "$stlDir/mom_tray_$i.stl"
+    Write-Host "Rendering Tray: $i -> $stlFile" -ForegroundColor Yellow
     
-    # Run OpenSCAD with manifold enabled for speed
-    $stlArgs = @( "-o", $stlFile, "--enable", "manifold", $scadFile )
+    if (Test-Path $stlFile) { Remove-Item $stlFile }
+    $stlArgs = @( "-o", $stlFile, "-D", "tray_index=$i", "--enable", "manifold", "mansions_tiles.scad" )
     & $osPath $stlArgs
 
     if ((Test-Path $stlFile) -and (Get-Item $stlFile).Length -gt 0) {
@@ -71,7 +73,7 @@ foreach ($scadFile in $targets.Keys) {
     }
 }
 
-# 3. PREVIEW RENDER
+# 5. PREVIEW RENDER
 if ($RenderPng) {
     $assemblyFile = "mom_assembly.scad"
     $pngFile = "$pngDir/preview.png"
